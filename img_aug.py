@@ -10,8 +10,8 @@ import random
 # random.seed(seed_value)
 # os.environ['PYTHONHASHSEED'] = str(seed_value)  # 为了禁止hash随机化，使得实验可复现。
 
-data_in = np.load('./Data_in.npy')
-data_out = np.load('./Data_out.npy')
+data_in = np.load('./data/Data_in.npy')
+data_out = np.load('./data/Data_out.npy')
 
 p = Augmentor.DataPipeline(np.stack((data_in, data_out), axis=1))
 
