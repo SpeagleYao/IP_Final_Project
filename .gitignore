@@ -4,6 +4,7 @@
 # Image
 IMA*/
 GROUND*/
+GT*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
