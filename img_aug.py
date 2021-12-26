@@ -28,6 +28,8 @@ g = p.generator(batch_size=256)
 img_tot = np.array(next(g))
 img_aug = img_tot[:,0,:,:]
 gt_aug = img_tot[:,1,:,:]
+# Remember to do Normalization
+# print(np.mean(img_aug))
 # ind = 16
 # a = np.hstack((img_aug[ind], gt_aug[ind]))
 # cv2.imshow('img01', a)
