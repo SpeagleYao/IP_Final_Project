@@ -25,7 +25,7 @@ class data_generator():
         self.p.flip_top_bottom(probability=0.5)
         self.p.skew(probability=0.2)
         self.p.random_distortion(probability=0.2, grid_height=16, grid_width=16, magnitude=1)
-        self.p.crop_random(probability=0.5, percentage_area=0.8)
+        self.p.crop_random(probability=0.5, percentage_area=0.6)
         self.p.resize(probability=1, width=224, height=224)
 
         self.g = self.p.generator(batch_size)

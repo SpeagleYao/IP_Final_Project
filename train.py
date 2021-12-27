@@ -11,9 +11,9 @@ import time
 # import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", type=int, default=10, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=20, help="批训练大小")
-parser.add_argument("--learning_rate", type=float, default=0.01, help="学习率大小")
+parser.add_argument("--epoch", type=int, default=50, help="训练迭代次数")
+parser.add_argument("--batch_size", type=int, default=10, help="批训练大小")
+parser.add_argument("--learning_rate", type=float, default=0.1, help="学习率大小")
 parser.add_argument("--momentum", type=float, default=0.9)
 # parser.add_argument("--category_weight", type=float, default=[0.7502381287857225, 1.4990483912788268], help="损失函数中类别的权重")
 # parser.add_argument("--train_txt", type=str, default="train.txt", help="训练的图片和标签的路径")
