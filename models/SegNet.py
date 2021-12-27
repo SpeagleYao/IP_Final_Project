@@ -152,3 +152,23 @@ class SegNet(nn.Module):
         x = self.deco5(x)
 
         return x
+
+    def load_weights(self, weights_path):
+        weights = torch.load(weights_path)
+        del weights["classifier.0.weight"]
+        del weights["classifier.0.bias"]
+        del weights["classifier.3.weight"]
+        del weights["classifier.3.bias"]
+        del weights["classifier.6.weight"]
+        del weights["classifier.6.bias"]
+
+        names = []
+        for key, value in self.encoder.state_dict().items():
+            if "num_batches_tracked" in key:
+                continue
+            names.append(key)
+
+        for name, dict in zip(names, weights.items()):
+            self.weights_new[name] = dict[1]
+
+        self.encoder.load_state_dict(self.weights_new)
