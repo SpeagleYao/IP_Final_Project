@@ -1,1 +1,1 @@
-from .Dice_Loss import DiceLoss
+from .Dice_Loss import DiceLoss, DiceBCELoss

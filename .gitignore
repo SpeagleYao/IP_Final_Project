@@ -1,10 +1,11 @@
 # Mac
 .DS_*
-test.py
+test*
 
 # Model
 *.pth
 pth/
+log/
 
 # Image
 IMA*/
