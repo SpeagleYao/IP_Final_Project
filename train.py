@@ -12,23 +12,23 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", type=int, default=10, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=128, help="批训练大小")
+parser.add_argument("--batch_size", type=int, default=20, help="批训练大小")
 parser.add_argument("--learning_rate", type=float, default=0.01, help="学习率大小")
 parser.add_argument("--momentum", type=float, default=0.9)
 # parser.add_argument("--category_weight", type=float, default=[0.7502381287857225, 1.4990483912788268], help="损失函数中类别的权重")
 # parser.add_argument("--train_txt", type=str, default="train.txt", help="训练的图片和标签的路径")
-parser.add_argument("--pre_training_weight", type=str, default="vgg16_bn-6c64b313.pth", help="编码器预训练权重路径")
+# parser.add_argument("--pre_training_weight", type=str, default="vgg16_bn-6c64b313.pth", help="编码器预训练权重路径")
 parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
 opt = parser.parse_args()
 
 def train(SegNet):
 
     # SegNet = SegNet.cuda()
-    SegNet.load_weights(PRE_TRAINING)
+    # SegNet.load_weights(PRE_TRAINING)
 
     # train_loader = Data.DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
 
-    g = data_generator()
+    g = data_generator(BATCH_SIZE)
 
     optimizer = torch.optim.SGD(SegNet.parameters(), lr=LR, momentum=MOMENTUM)
 
@@ -38,13 +38,16 @@ def train(SegNet):
     SegNet.train()
     for epoch in tqdm(range(EPOCH)):
         img, tar = g.gen()
+        # img = img.cuda()
+        # tar = tar.cuda()
         out = SegNet(img)
         loss = criterion(1-out, 1-tar)
+        # loss = loss.cuda()
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        print("Epoch:{0} || Loss:{1}".format(epoch, format(loss, ".4f")))
+        tqdm.write("Epoch:{0} || Loss:{1}".format(epoch, format(loss, ".4f")))
 
         # for step, (b_x, b_y) in enumerate(train_loader):
         #     b_x = b_x.cuda()
@@ -70,7 +73,7 @@ LR = opt.learning_rate
 MOMENTUM = opt.momentum
 # CATE_WEIGHT = opt.category_weight
 # TXT_PATH = opt.train_txt
-PRE_TRAINING = opt.pre_training_weight
+# PRE_TRAINING = opt.pre_training_weight
 WEIGHTS = opt.weights
 
 

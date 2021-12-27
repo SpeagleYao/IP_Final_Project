@@ -34,11 +34,13 @@ class data_generator():
         img_tot = np.array(next(self.g))
         img_aug = np.expand_dims(img_tot[:,0,:,:], axis=1)/255
         gt_aug = np.expand_dims(img_tot[:,1,:,:], axis=1)/255
+        img_aug = torch.from_numpy(img_aug).float().detach().requires_grad_(True)
+        gt_aug = torch.from_numpy(gt_aug).float().detach().requires_grad_(True)
 
-        return torch.from_numpy(img_aug).float(), torch.from_numpy(gt_aug).float()
+        return img_aug, gt_aug
 
 if __name__=='__main__':
     g = data_generator()
     img, tar = g.gen()
     print(img.shape, tar.shape)
-    print(tar[0][0][0][1:10])
+    print(tar[0][0][0][0:10])
