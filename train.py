@@ -1,3 +1,4 @@
+from torch import optim
 from models import SegNet
 from loss import DiceLoss
 from img_aug import data_generator
@@ -5,13 +6,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import argparse
+from tqdm import tqdm
+import time
 # import os
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--epoch", type=int, default=10, help="训练迭代次数")
+parser.add_argument("--batch_size", type=int, default=128, help="批训练大小")
+parser.add_argument("--learning_rate", type=float, default=0.01, help="学习率大小")
+parser.add_argument("--momentum", type=float, default=0.9)
+# parser.add_argument("--category_weight", type=float, default=[0.7502381287857225, 1.4990483912788268], help="损失函数中类别的权重")
+# parser.add_argument("--train_txt", type=str, default="train.txt", help="训练的图片和标签的路径")
+parser.add_argument("--pre_training_weight", type=str, default="vgg16_bn-6c64b313.pth", help="编码器预训练权重路径")
+parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
+opt = parser.parse_args()
 
 def train(SegNet):
 
     # SegNet = SegNet.cuda()
-    # SegNet.load_weights(PRE_TRAINING)
+    SegNet.load_weights(PRE_TRAINING)
 
     # train_loader = Data.DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
 
@@ -23,10 +36,15 @@ def train(SegNet):
     criterion = DiceLoss()
 
     SegNet.train()
-    for epoch in range(EPOCH):
+    for epoch in tqdm(range(EPOCH)):
         img, tar = g.gen()
         out = SegNet(img)
+        loss = criterion(1-out, 1-tar)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
+        print("Epoch:{0} || Loss:{1}".format(epoch, format(loss, ".4f")))
 
         # for step, (b_x, b_y) in enumerate(train_loader):
         #     b_x = b_x.cuda()
@@ -41,29 +59,17 @@ def train(SegNet):
         #     if step % 1 == 0:
         #         print("Epoch:{0} || Step:{1} || Loss:{2}".format(epoch, step, format(loss, ".4f")))
 
-    torch.save(SegNet.state_dict(), WEIGHTS + "SegNet_weights" + str(time.time()) + ".pth")
+    torch.save(SegNet.state_dict(), WEIGHTS + "SegNet_" + str(time.time()) + ".pth")
 
-
-parser = argparse.ArgumentParser()
-# parser.add_argument("--class_num", type=int, default=2, help="训练的类别的种类")
-parser.add_argument("--epoch", type=int, default=10, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=128, help="批训练大小")
-parser.add_argument("--learning_rate", type=float, default=0.01, help="学习率大小")
-parser.add_argument("--momentum", type=float, default=0.9)
-parser.add_argument("--category_weight", type=float, default=[0.7502381287857225, 1.4990483912788268], help="损失函数中类别的权重")
-parser.add_argument("--train_txt", type=str, default="train.txt", help="训练的图片和标签的路径")
-parser.add_argument("--pre_training_weight", type=str, default="vgg16_bn-6c64b313.pth", help="编码器预训练权重路径")
-parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
-opt = parser.parse_args()
-print(opt)
+# print(opt)
 
 # CLASS_NUM = opt.class_num
 EPOCH = opt.epoch
 BATCH_SIZE = opt.batch_size
 LR = opt.learning_rate
 MOMENTUM = opt.momentum
-CATE_WEIGHT = opt.category_weight
-TXT_PATH = opt.train_txt
+# CATE_WEIGHT = opt.category_weight
+# TXT_PATH = opt.train_txt
 PRE_TRAINING = opt.pre_training_weight
 WEIGHTS = opt.weights
 
