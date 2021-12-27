@@ -41,4 +41,4 @@ if __name__=='__main__':
     g = data_generator()
     img, tar = g.gen()
     print(img.shape, tar.shape)
-    print(tar.type())
+    print(tar[0][0][0][1:10])

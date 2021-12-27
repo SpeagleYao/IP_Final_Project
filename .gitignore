@@ -4,6 +4,7 @@ test.py
 
 # Model
 *.pth
+pth/
 
 # Image
 IMA*/

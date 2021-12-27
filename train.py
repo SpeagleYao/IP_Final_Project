@@ -20,12 +20,13 @@ def train(SegNet):
     optimizer = torch.optim.SGD(SegNet.parameters(), lr=LR, momentum=MOMENTUM)
 
     # loss_func = nn.CrossEntropyLoss(weight=torch.from_numpy(np.array(CATE_WEIGHT)).float()).cuda()
-    loss = DiceLoss()
+    criterion = DiceLoss()
 
     SegNet.train()
     for epoch in range(EPOCH):
         img, tar = g.gen()
         out = SegNet(img)
+
 
         # for step, (b_x, b_y) in enumerate(train_loader):
         #     b_x = b_x.cuda()
@@ -52,7 +53,7 @@ parser.add_argument("--momentum", type=float, default=0.9)
 parser.add_argument("--category_weight", type=float, default=[0.7502381287857225, 1.4990483912788268], help="损失函数中类别的权重")
 parser.add_argument("--train_txt", type=str, default="train.txt", help="训练的图片和标签的路径")
 parser.add_argument("--pre_training_weight", type=str, default="vgg16_bn-6c64b313.pth", help="编码器预训练权重路径")
-parser.add_argument("--weights", type=str, default="./weights/", help="训练好的权重保存路径")
+parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
 opt = parser.parse_args()
 print(opt)
 
@@ -67,7 +68,7 @@ PRE_TRAINING = opt.pre_training_weight
 WEIGHTS = opt.weights
 
 
-train_data = MyDataset(txt_path=TXT_PATH)
+# train_data = MyDataset(txt_path=TXT_PATH)
 
 SegNet = SegNet(1, 1)
 train(SegNet)
