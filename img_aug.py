@@ -4,9 +4,10 @@ import Augmentor
 import os
 import shutil
 import random
+import torch
 
 class data_generator():
-    def __init__(self, batch_size = 256, seed=None):
+    def __init__(self, batch_size = 128, seed=None):
         super(data_generator, self).__init__()
 
         data_in = np.load('./data/Data_in.npy')
@@ -31,7 +32,13 @@ class data_generator():
 
     def gen(self):
         img_tot = np.array(next(self.g))
-        img_aug = img_tot[:,0,:,:]
-        gt_aug = img_tot[:,1,:,:]
+        img_aug = np.expand_dims(img_tot[:,0,:,:], axis=1)/255
+        gt_aug = np.expand_dims(img_tot[:,1,:,:], axis=1)/255
 
-        return img_aug, gt_aug
+        return torch.from_numpy(img_aug).float(), torch.from_numpy(gt_aug).float()
+
+if __name__=='__main__':
+    g = data_generator()
+    img, tar = g.gen()
+    print(img.shape, tar.shape)
+    print(tar.type())

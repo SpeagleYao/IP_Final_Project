@@ -1,5 +1,9 @@
 # Mac
 .DS_*
+test.py
+
+# Model
+*.pth
 
 # Image
 IMA*/

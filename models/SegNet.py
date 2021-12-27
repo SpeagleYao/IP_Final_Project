@@ -150,6 +150,7 @@ class SegNet(nn.Module):
         x = self.deco4(x)
         x = F.max_unpool2d(x, id[0], kernel_size=2, stride=2)
         x = self.deco5(x)
+        x = (x>=0.5)
 
         return x
 
