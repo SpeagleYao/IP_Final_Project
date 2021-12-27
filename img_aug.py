@@ -5,8 +5,6 @@ import os
 import shutil
 import random
 
-
-
 class data_generator():
     def __init__(self, batch_size = 256, seed=None):
         super(data_generator, self).__init__()
