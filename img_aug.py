@@ -34,7 +34,7 @@ class data_generator():
         img_tot = np.array(next(self.g))
         img_aug = np.expand_dims(img_tot[:,0,:,:], axis=1)/255
         gt_aug = np.expand_dims(img_tot[:,1,:,:], axis=1)/255
-        img_aug = torch.from_numpy(img_aug).float().detach().requires_grad_(True)
+        img_aug = torch.from_numpy(img_aug).repeat(1, 3, 1, 1).float().detach().requires_grad_(True)
         gt_aug = torch.from_numpy(gt_aug).float().detach().requires_grad_(True)
 
         return img_aug, gt_aug
