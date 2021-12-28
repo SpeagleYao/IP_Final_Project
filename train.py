@@ -32,7 +32,8 @@ def train(SegNet):
     # scaler = GradScaler()
     # loss_func = nn.CrossEntropyLoss(weight=torch.from_numpy(np.array(CATE_WEIGHT)).float()).cuda()
     # criterion = DiceLoss().cuda()
-    criterion = DiceBCELoss().cuda()
+    # criterion = DiceBCELoss().cuda()
+    criterion = FocalLoss(gamma=2, alpha=0.75).cuda()
     # criterion = nn.CrossEntropyLoss().cuda()
 
     SegNet.train()
