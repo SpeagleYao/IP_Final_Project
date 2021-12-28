@@ -23,10 +23,10 @@ class data_generator():
         self.p.rotate(probability=1.0, max_left_rotation=25, max_right_rotation=25)
         self.p.flip_left_right(probability=0.5)
         self.p.flip_top_bottom(probability=0.5)
-        # self.p.skew(probability=0.2)
+        self.p.skew(probability=0.2)
         # self.p.random_distortion(probability=0.2, grid_height=16, grid_width=16, magnitude=1)
         # self.p.crop_random(probability=0.5, percentage_area=0.6)
-        self.p.resize(probability=1, width=64, height=64)
+        # self.p.resize(probability=1, width=224, height=224)
 
         self.g = self.p.generator(batch_size)
 
@@ -43,4 +43,8 @@ if __name__=='__main__':
     g = data_generator()
     img, tar = g.gen()
     print(img.shape, tar.shape) # 256, 1, 128, 128
-    print(tar[0][0][0][0:10])
+    # print(tar[0][0][0][0:10])
+    ind = 0
+    a = np.hstack((img.detach().numpy()[ind][0]*255, tar.detach().numpy()[ind][0]*255))
+    cv2.imwrite('testimage.png', a)
+    # cv2.waitKey(0)

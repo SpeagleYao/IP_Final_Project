@@ -13,9 +13,9 @@ import time
 # import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--epoch", type=int, default=100, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=128, help="批训练大小")
-parser.add_argument("--learning_rate", type=float, default=0.1, help="学习率大小")
+parser.add_argument("--epoch", type=int, default=150, help="训练迭代次数")
+parser.add_argument("--batch_size", type=int, default=32, help="批训练大小")
+parser.add_argument("--learning_rate", type=float, default=1e-3, help="学习率大小")
 parser.add_argument("--momentum", type=float, default=0.9)
 parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
 opt = parser.parse_args()
@@ -28,7 +28,7 @@ def train(SegNet):
     g = data_generator(BATCH_SIZE)
 
     optimizer = torch.optim.SGD(SegNet.parameters(), lr=LR, momentum=MOMENTUM)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=75, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=140, gamma=0.1)
     # scaler = GradScaler()
     # loss_func = nn.CrossEntropyLoss(weight=torch.from_numpy(np.array(CATE_WEIGHT)).float()).cuda()
     # criterion = DiceLoss().cuda()
