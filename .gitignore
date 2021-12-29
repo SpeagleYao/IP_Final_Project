@@ -1,6 +1,5 @@
 # Mac
 .DS_*
-test*
 
 # Model
 *.pth
