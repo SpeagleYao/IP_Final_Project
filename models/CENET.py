@@ -13,7 +13,7 @@ class DACblock(nn.Module):
         super(DACblock, self).__init__()
         self.dilate1 = nn.Conv2d(channel, channel, kernel_size=3, dilation=1, padding=1)
         self.dilate2 = nn.Conv2d(channel, channel, kernel_size=3, dilation=3, padding=3)
-        self.dilate3 = nn.Conv2d(channel, channel, kernel_size=3, dilation=5, padding=5)
+        # self.dilate3 = nn.Conv2d(channel, channel, kernel_size=3, dilation=5, padding=5)
         self.conv1x1 = nn.Conv2d(channel, channel, kernel_size=1, dilation=1, padding=0)
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
@@ -22,10 +22,12 @@ class DACblock(nn.Module):
 
     def forward(self, x):
         dilate1_out = nonlinearity(self.dilate1(x))
-        dilate2_out = nonlinearity(self.conv1x1(self.dilate2(x)))
-        dilate3_out = nonlinearity(self.conv1x1(self.dilate2(self.dilate1(x))))
-        dilate4_out = nonlinearity(self.conv1x1(self.dilate3(self.dilate2(self.dilate1(x)))))
-        out = x + dilate1_out + dilate2_out + dilate3_out + dilate4_out
+        # dilate2_out = nonlinearity(self.conv1x1(self.dilate2(x)))
+        # dilate3_out = nonlinearity(self.conv1x1(self.dilate2(self.dilate1(x))))
+        # dilate4_out = nonlinearity(self.conv1x1(self.dilate3(self.dilate2(self.dilate1(x)))))
+        out = x + dilate1_out
+        #  + dilate2_out + dilate3_out
+        #  + dilate4_out
         return out
 
 
@@ -223,6 +225,68 @@ class CE_Net_(nn.Module):
 
         return out
 
+class CENet_My(nn.Module):
+    def __init__(self, num_classes=1):
+        super(CENet_My, self).__init__()
+
+        filters = [64, 128, 256, 512]
+        resnet = models.resnet34(pretrained=False)
+        self.firstconv = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.firstbn = resnet.bn1
+        self.firstrelu = resnet.relu
+        self.firstmaxpool = resnet.maxpool
+        self.encoder1 = resnet.layer1
+        self.encoder2 = resnet.layer2
+        self.encoder3 = resnet.layer3
+        # self.encoder4 = resnet.layer4
+
+        # self.dblock = DACblock(512)
+        # self.spp = SPPblock(256)
+
+        # self.decoder4 = DecoderBlock(512, filters[2])
+        self.decoder3 = DecoderBlock(256, filters[1])
+        self.decoder2 = DecoderBlock(filters[1], filters[0])
+        self.decoder1 = DecoderBlock(filters[0], filters[0])
+
+        # self.finaldeconv1 = nn.ConvTranspose2d(filters[0], 32, 4, 2, 1)
+        # self.finalconv1 = nn.Conv2d(filters[0], 32, 3, padding=1)
+        # self.finalrelu1 = nonlinearity
+        self.finalconv2 = nn.Conv2d(64, 32, 3, padding=1)
+        self.finalrelu2 = nonlinearity
+        self.finalconv3 = nn.Conv2d(32, num_classes, 3, padding=1)
+
+    def forward(self, x):
+        # Encoder
+        x = self.firstconv(x)
+        x = self.firstbn(x)
+        x = self.firstrelu(x)
+        x = self.firstmaxpool(x)
+        e1 = self.encoder1(x)
+        e2 = self.encoder2(e1)
+        e3 = self.encoder3(e2)
+        # e4 = self.encoder4(e3)
+
+        # Center
+        # e3 = self.dblock(e3)
+        # e3 = self.spp(e3)
+        # e4 = self.spp(e4)
+
+        # Decoder
+        # d4 = self.decoder4(e4) + e3
+        d3 = self.decoder3(e3) + e2
+        d2 = self.decoder2(d3) + e1
+        d1 = self.decoder1(d2)
+
+        # out = self.finaldeconv1(d1)
+        # out = self.finalrelu1(out)
+        # out = self.finalconv1(d1)
+        # out = self.finalrelu1(out)
+        out = self.finalconv2(d1)
+        out = self.finalrelu2(out)
+        out = self.finalconv3(out)
+
+        return out
+
 class CENet50(nn.Module):
     def __init__(self, num_classes=1):
         super(CENet50, self).__init__()
@@ -400,12 +464,12 @@ class CE_Net_backbone_DAC_with_inception(nn.Module):
         return torch.sigmoid(out)
 
 class CE_Net_backbone_inception_blocks(nn.Module):
-    def __init__(self, num_classes=1, num_channels=3):
+    def __init__(self, num_classes=1):
         super(CE_Net_backbone_inception_blocks, self).__init__()
 
         filters = [64, 128, 256, 512]
-        resnet = models.resnet34(pretrained=True)
-        self.firstconv = resnet.conv1
+        resnet = models.resnet34(pretrained=False)
+        self.firstconv = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.firstbn = resnet.bn1
         self.firstrelu = resnet.relu
         self.firstmaxpool = resnet.maxpool
@@ -416,7 +480,6 @@ class CE_Net_backbone_inception_blocks(nn.Module):
 
         self.dblock = DACblock_with_inception_blocks(512)
 
-
         self.decoder4 = DecoderBlock(512, filters[2])
         self.decoder3 = DecoderBlock(filters[2], filters[1])
         self.decoder2 = DecoderBlock(filters[1], filters[0])
@@ -424,7 +487,7 @@ class CE_Net_backbone_inception_blocks(nn.Module):
 
         self.finaldeconv1 = nn.ConvTranspose2d(filters[0], 32, 4, 2, 1)
         self.finalrelu1 = nonlinearity
-        self.finalconv2 = nn.Conv2d(32, 32, 3, padding=1)
+        self.finalconv2 = nn.Conv2d(64, 32, 3, padding=1)
         self.finalrelu2 = nonlinearity
         self.finalconv3 = nn.Conv2d(32, num_classes, 3, padding=1)
 
@@ -449,13 +512,13 @@ class CE_Net_backbone_inception_blocks(nn.Module):
         d2 = self.decoder2(d3) + e1
         d1 = self.decoder1(d2)
 
-        out = self.finaldeconv1(d1)
-        out = self.finalrelu1(out)
-        out = self.finalconv2(out)
+        # out = self.finaldeconv1(d1)
+        # out = self.finalrelu1(out)
+        out = self.finalconv2(d1)
         out = self.finalrelu2(out)
         out = self.finalconv3(out)
 
-        return torch.sigmoid(out)
+        return out
 
 
 class CE_Net_OCT(nn.Module):

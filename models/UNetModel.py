@@ -2,7 +2,7 @@ import torch
 
 class UNetModel(torch.nn.Module):
 
-    def __init__(self, in_features=1, out_features=2, init_features=32):
+    def __init__(self, in_features=1, out_features=1, init_features=32):
         super(UNetModel, self).__init__()
         features = init_features
         self.encode_layer1 = torch.nn.Sequential(

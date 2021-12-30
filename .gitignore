@@ -9,6 +9,8 @@ log/
 IMA*/
 GROUND*/
 GT*/
+nlimg/
+prdimg/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
