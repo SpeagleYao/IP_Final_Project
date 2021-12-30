@@ -13,7 +13,7 @@ from models.CENET import CENet50
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", type=int, default=500, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=8, help="批训练大小")
+parser.add_argument("--batch_size", type=int, default=2, help="批训练大小")
 parser.add_argument("--learning_rate", type=float, default=1e-1, help="学习率大小")
 parser.add_argument("--momentum", type=float, default=0.9)
 parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")

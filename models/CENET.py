@@ -301,7 +301,6 @@ class CE_Net_backbone_DAC_without_atrous(nn.Module):
 
         self.dblock = DACblock_without_atrous(512)
 
-
         self.decoder4 = DecoderBlock(512, filters[2])
         self.decoder3 = DecoderBlock(filters[2], filters[1])
         self.decoder2 = DecoderBlock(filters[1], filters[0])
