@@ -225,9 +225,9 @@ class CE_Net_(nn.Module):
 
 class CENet50(nn.Module):
     def __init__(self, num_classes=1):
-        super(CE_Net_, self).__init__()
+        super(CENet50, self).__init__()
 
-        filters = [64, 128, 256, 512]
+        filters = [64*4, 128*4, 256*4, 512*4]
         resnet = models.resnet50(pretrained=False)
         self.firstconv = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.firstbn = resnet.bn1
@@ -238,15 +238,17 @@ class CENet50(nn.Module):
         self.encoder3 = resnet.layer3
         self.encoder4 = resnet.layer4
 
-        self.dblock = DACblock(512)
-        self.spp = SPPblock(512)
+        self.dblock = DACblock(2048)
+        self.spp = SPPblock(2048)
 
-        self.decoder4 = DecoderBlock(516, filters[2])
+        self.decoder4 = DecoderBlock(2052, filters[2])
         self.decoder3 = DecoderBlock(filters[2], filters[1])
         self.decoder2 = DecoderBlock(filters[1], filters[0])
-        self.decoder1 = DecoderBlock(filters[0], filters[0])
+        self.decoder1 = DecoderBlock(filters[0], 32*4)
 
-        self.finaldeconv1 = nn.ConvTranspose2d(filters[0], 32, 4, 2, 1)
+        # self.finaldeconv1 = nn.ConvTranspose2d(32*4, 64, 4, 2, 1)
+        # self.finalrelu1 = nonlinearity
+        self.finalconv1 = nn.Conv2d(128, 64, 3, padding=1)
         self.finalrelu1 = nonlinearity
         self.finalconv2 = nn.Conv2d(64, 32, 3, padding=1)
         self.finalrelu2 = nonlinearity
@@ -254,14 +256,15 @@ class CENet50(nn.Module):
 
     def forward(self, x):
         # Encoder
+        # input bs, 1, 224, 224
         x = self.firstconv(x)
         x = self.firstbn(x)
         x = self.firstrelu(x)
-        x = self.firstmaxpool(x)
-        e1 = self.encoder1(x)
-        e2 = self.encoder2(e1)
-        e3 = self.encoder3(e2)
-        e4 = self.encoder4(e3)
+        x = self.firstmaxpool(x) # ba, 64, 112, 112
+        e1 = self.encoder1(x) # bs, 256, 112, 112
+        e2 = self.encoder2(e1) # bs, 512, 56, 56
+        e3 = self.encoder3(e2) # bs, 1024, 28, 28
+        e4 = self.encoder4(e3) # bs, 2048, 14, 14
 
         # Center
         e4 = self.dblock(e4)
@@ -273,9 +276,9 @@ class CENet50(nn.Module):
         d2 = self.decoder2(d3) + e1
         d1 = self.decoder1(d2)
 
-        # out = self.finaldeconv1(d1)
-        # out = self.finalrelu1(out)
-        out = self.finalconv2(d1)
+        out = self.finalconv1(d1)
+        out = self.finalrelu1(out)
+        out = self.finalconv2(out)
         out = self.finalrelu2(out)
         out = self.finalconv3(out)
 

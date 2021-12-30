@@ -13,7 +13,7 @@ from models.CENET import CENet50
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", type=int, default=500, help="训练迭代次数")
-parser.add_argument("--batch_size", type=int, default=32, help="批训练大小")
+parser.add_argument("--batch_size", type=int, default=8, help="批训练大小")
 parser.add_argument("--learning_rate", type=float, default=1e-1, help="学习率大小")
 parser.add_argument("--momentum", type=float, default=0.9)
 parser.add_argument("--weights", type=str, default="./pth/", help="训练好的权重保存路径")
@@ -80,7 +80,7 @@ def train(model):
     out = best_model(img)
     loss_val = criterion(1-out, 1-tar)
     tqdm.write("Final Epoch || Loss_val:{0}".format(loss_val, ".4f"))
-    torch.save(best_model.state_dict(), "./pth/CENet_" + str(1) + ".pth")
+    torch.save(best_model.state_dict(), "./pth/CENet50.pth")
 
 EPOCH = opt.epoch
 BATCH_SIZE = opt.batch_size
