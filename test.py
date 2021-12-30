@@ -7,8 +7,10 @@ import numpy as np
 import cv2
 import torch
 
-model = UNetModel(out_features=1)
-model.load_state_dict(torch.load('./pth/Unet_2.pth'))
+model = CE_Net_()
+# model = UNetModel(out_features=1)
+model.load_state_dict(torch.load('./pth/CENet_1.pth'))
+# model.load_state_dict(torch.load('./pth/Unet_2.pth'))
 model.eval()
 # data_in = np.load('./data/img_val.npy')
 # data_out = np.load('./data/tar_val.npy')
@@ -24,11 +26,9 @@ loss_val = criterion(1-out, 1-tar)
 print("Loss_val:{0}".format(format(loss_val, ".4f")))
 # print(img.shape)
 
-# model.eval()
-# out = model(img)
 # print(out.shape)
 out = torch.where(out>=0.5, 1, 0)
-out = out.numpy().reshape(224, 224)*255
-tar = np.load('./data/tar_val.npy')
+out = out.numpy().reshape(10, 224, 224)*255
+tar = tar.detach().numpy().reshape(10, 224, 224)*255
 a = np.hstack((tar[0], out[0]))
-cv2.imwrite('testimage.png', a)
+cv2.imwrite('prdimg.png', a)
