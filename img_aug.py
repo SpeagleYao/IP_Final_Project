@@ -33,7 +33,6 @@ class data_generator():
             os.environ['PYTHONHASHSEED'] = str(seed)  # 为了禁止hash随机化，使得实验可复现。
 
         self.g = self.p.generator(batch_size)
-        # self.transform = transforms.Normalize([0.5], [0.5])
 
     def gen(self):
         img_tot = np.array(next(self.g))
@@ -49,9 +48,8 @@ if __name__=='__main__':
     img, tar = g.gen()
     print(img.shape, tar.shape) # 256, 1, 128, 128
     print(img[0].max(), img[0].min(), img[0].mean(), img[0].std())
-    # print(tar[0][0][0][0:10])
     ind = 0
     a = np.hstack((img.detach().numpy()[ind][0]*255, tar.detach().numpy()[ind][0]*255))
-    # cv2.imshow('data', img.detach().numpy()[ind][0]*255)
     cv2.imwrite('testimage.png', a)
+    # cv2.imshow('data', img.detach().numpy()[ind][0]*255)
     # cv2.waitKey(0)

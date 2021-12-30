@@ -10,7 +10,6 @@ path = "./IMAGES_NL/"  #待读取的文件夹
 path_list = os.listdir(path)
 path_list.sort() #对读取的路径进行排序
 for filename in path_list:
-    # if filename == path_list[0]: continue
     filepath = os.path.join(path, filename)
     image = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
     dim = (224, 224)
@@ -31,10 +30,3 @@ for i in tqdm(range(srcimg.shape[0])):
     out = out.numpy().reshape(224, 224)*255
     a = np.hstack((img, out))
     cv2.imwrite('./nlimg/nlimg'+str(i)+'.png', a)
-# out = model(data)
-# out = torch.where(out>=0.5, 1, 0)
-# out = out.numpy().reshape(out.shape[0], 224, 224)*255
-# srcimg = srcimg.reshape(srcimg.shape[0], 224, 224)
-# for i in range(out.shape[0]):
-#     a = np.hstack((srcimg[i], out[i]))
-#     cv2.imwrite('./nlimg/nlimg'+str(i)+'.png', a)

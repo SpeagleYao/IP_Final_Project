@@ -4,6 +4,7 @@
 # Model
 *.pth
 log/
+network/
 
 # Image
 IMA*/
